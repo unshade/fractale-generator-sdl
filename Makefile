@@ -1,8 +1,23 @@
-game:
-	g++ main.cpp -o play -I include -L lib -l SDL2-2.0.0
+CC=clang++
+CFLAGS= -Wall -Wextra -pedantic
+LDFLAGS=-L/opt/homebrew/lib -fsanitize=address -lSDL2
+CPPFLAGS=-I/opt/homebrew/include -I/opt/homebrew/include/SDL2
+CFLAGS += $(CPPFLAGS) -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
-run: game
-	./play
+EXECUTABLE=play
+SOURCES=main.cpp Complex.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+run: $(EXECUTABLE)
+	./$(EXECUTABLE)
 
 clean:
-	rm play
+	rm -f *.o $(EXECUTABLE)

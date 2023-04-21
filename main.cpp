@@ -1,7 +1,7 @@
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <cmath>
-
+#include "Complex.h"
 using namespace std;
 
 const int WIDTH = 800;
@@ -37,16 +37,13 @@ void hsvToRgb(float h, float s, float v, int *r, int *g, int *b) {
     }
 }
 
-int julia(double real, double imag, double c_real, double c_imag) {
-    double r = real, i = imag;
+int julia(Complex z_0, Complex c) {
+    Complex z = z_0;
     for (int iter = 0; iter < MAX_ITER; iter++) {
-        double r2 = r * r;
-        double i2 = i * i;
-        if (r2 + i2 > 4.0) {
+        if (z.abs() > 2) {
             return iter;
         }
-        i = 2 * r * i + c_imag;
-        r = r2 - i2 + c_real;
+        z = z * z + c;
     }
     return MAX_ITER;
 }
@@ -54,6 +51,8 @@ int julia(double real, double imag, double c_real, double c_imag) {
 int main(int argc, char *argv[]) {
     double input_real = argv[1] ? atof(argv[1]) : -0.7;
     double input_imag = argv[2] ? atof(argv[2]) : 0.27015;
+
+    Complex c = Complex(input_real, input_imag);
 
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window *window = SDL_CreateWindow("Mandelbrot", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT,
@@ -102,10 +101,10 @@ int main(int argc, char *argv[]) {
                 double real = offsetX + (x - WIDTH / 2.0) * 4.0 / (WIDTH * zoom);
                 double imag = offsetY + (y - HEIGHT / 2.0) * 4.0 / (HEIGHT * zoom);
 
-                double c_real = input_real;
-                double c_imag = input_imag;
+                Complex z_0 = Complex(real, imag);
 
-                int value = julia(real, imag, c_real, c_imag);
+                int value = julia(z_0, c);
+
                 float color = (float) value / MAX_ITER;
 
                 int r, g, b;

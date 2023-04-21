@@ -1,0 +1,4 @@
+leak:realizeClassWithoutSwift
+leak:_fetchInitializingClassList
+leak:cache_t
+leak:__Balloc_D2A
